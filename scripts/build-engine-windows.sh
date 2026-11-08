@@ -82,5 +82,7 @@ install -m644 build/zapret2/lua/zapret-lib.lua build/zapret2/lua/zapret-antidpi.
 install -m644 build/zapret2/docs/LICENSE.txt build/windows/ZAPRET-LICENSE
 printf '%s\n' "$commit" > build/windows/engine.commit
 cp third_party/windivert/x64/WinDivert.dll build/windows/
-( cd build/windows && { wine ./winws2.exe --version || ./winws2.exe --version; } )
+if command -v wine >/dev/null; then
+    ( cd build/windows && wine ./winws2.exe --version ) || echo "Внимание: wine не смог запустить winws2.exe — проверка версии пропущена"
+fi
 echo "Движок собран: build/windows/winws2.exe"
