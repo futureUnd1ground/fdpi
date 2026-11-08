@@ -15,6 +15,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -404,6 +405,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			i := m.index()
 			if m.page == 6 && i == len(Themes) {
 				m.confirm = "Удалить FDPI с компьютера? Служба остановится, автозапуск отключится, установленные файлы будут удалены. Настройки сохранятся."
+				if runtime.GOOS == "windows" {
+					m.confirm += " Занятые файлы удалятся после перезагрузки Windows."
+				}
 				m.pending = []string{"uninstall", "--yes"}
 			} else if m.page == 6 && i >= 0 && i < len(Themes) {
 				m.theme = Themes[i]
