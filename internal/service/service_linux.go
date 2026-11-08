@@ -3,7 +3,6 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/futureUnd1ground/fdpi/internal/config"
@@ -21,6 +20,13 @@ import (
 )
 
 const SystemConfig = "/etc/fdpi/config.json"
+const PreviousConfig = "/etc/fdpi/previous.json"
+
+// OperationLockPath сериализует административные операции FDPI.
+func OperationLockPath() string { return "/etc/fdpi/.operation.lock" }
+
+// IsAdmin reports whether the process runs with root privileges.
+func IsAdmin() bool { return os.Geteuid() == 0 }
 
 func Command(ctx context.Context, args ...string) (string, error) {
 	b, e := exec.CommandContext(ctx, "/usr/bin/systemctl", args...).CombinedOutput()
@@ -212,30 +218,11 @@ func Apply(ctx context.Context, path string) error {
 	if state.Detail != "" || !state.Installed {
 		return fmt.Errorf("не удалось проверить службу systemd: %s", state.Detail)
 	}
-	return commit(SystemConfig, "/etc/fdpi/previous.json", c, state.Service == "active", func() error { return RestartCheck(ctx) }, func() error {
+	return commit(SystemConfig, PreviousConfig, c, state.Service == "active", func() error { return RestartCheck(ctx) }, func() error {
 		restore, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 		return RestartCheck(restore)
 	})
-}
-
-func commit(path, backup string, c config.Config, active bool, restart, restore func() error) error {
-	old, e := config.Load(path)
-	if e != nil {
-		return e
-	}
-	if e = config.Save(backup, old); e != nil {
-		return e
-	}
-	if e = config.Save(path, c); e != nil {
-		return e
-	}
-	if active {
-		if e = restart(); e != nil {
-			return errors.Join(e, config.Save(path, old), restore())
-		}
-	}
-	return nil
 }
 
 func RestartCheck(ctx context.Context) error {
@@ -254,16 +241,6 @@ func RestartCheck(ctx context.Context) error {
 		return fmt.Errorf("служба не запустилась после перезапуска: %s %v", s, e)
 	}
 	return nil
-}
-
-type Status struct {
-	Installed       bool   `json:"installed"`
-	QueueObservable bool   `json:"queue_observable"`
-	Service         string `json:"service"`
-	UnitFileState   string `json:"unit_file_state,omitempty"`
-	SupervisorPID   int    `json:"supervisor_pid,omitempty"`
-	QueueBound      bool   `json:"queue_bound"`
-	Detail          string `json:"detail,omitempty"`
 }
 
 func State(ctx context.Context) Status {
@@ -295,7 +272,6 @@ func State(ctx context.Context) Status {
 	}
 	return v
 }
-func JSON(v any) string { b, _ := json.MarshalIndent(v, "", "  "); return string(b) }
 
 func notifyReady() {
 	path := os.Getenv("NOTIFY_SOCKET")
@@ -308,35 +284,4 @@ func notifyReady() {
 	}
 	defer conn.Close()
 	_, _ = conn.Write([]byte("READY=1"))
-}
-
-func (s Status) QueueText() string {
-	if !s.QueueObservable {
-		return "неизвестно (нужны права root)"
-	}
-	if s.QueueBound {
-		return "подключена"
-	}
-	return "не подключена"
-}
-
-// StateText renders systemd states for people; JSON keeps the stable systemd identifiers.
-func (s Status) StateText() string {
-	switch s.Service {
-	case "active":
-		return "работает"
-	case "inactive":
-		return "остановлена"
-	case "failed":
-		return "ошибка запуска"
-	case "activating":
-		return "запускается"
-	case "deactivating":
-		return "останавливается"
-	case "not-installed":
-		return "не установлена — выполните fdpi setup"
-	case "unknown":
-		return "состояние неизвестно"
-	}
-	return s.Service
 }

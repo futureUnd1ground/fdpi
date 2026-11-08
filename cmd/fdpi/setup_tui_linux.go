@@ -396,21 +396,6 @@ func (m setupModel) View() string {
 	}
 	return tui.Frame(m.width, m.height, tui.Theme("FDPI"), []string{"① Начало", "② Параметры", "③ Установка", "④ Готово"}, m.page, "Установка и настройка", "МАСТЕР", strings.Join(lines, "\n"), "[↑↓] Выбор  [Space] Флажок  [Enter] Продолжить  [Q] Выход")
 }
-func onboardingPath() string {
-	return filepath.Join(filepath.Dir(config.UserPath()), "onboarding.json")
-}
-func needsOnboarding() bool {
-	b, e := os.ReadFile(onboardingPath())
-	if e == nil {
-		var saved struct {
-			Version string `json:"version"`
-		}
-		if json.Unmarshal(b, &saved) == nil && saved.Version == version {
-			return false
-		}
-	}
-	return true
-}
 func runSetupTUI(ctx context.Context, source string) (bool, error) {
 	result, e := tea.NewProgram(newSetupModel(ctx, source), tea.WithAltScreen(), tea.WithContext(ctx)).Run()
 	if e != nil {

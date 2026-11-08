@@ -71,7 +71,7 @@ func operation(args []string) tea.Cmd {
 			}
 		}
 		var output operationOutput
-		cmd := exec.Command("sudo", append([]string{"--", "/usr/bin/fdpi"}, args...)...)
+		cmd := operationCommand(args)
 		cmd.Stdout = io.MultiWriter(os.Stdout, &output)
 		cmd.Stderr = io.MultiWriter(os.Stderr, &output)
 		return tea.ExecProcess(cmd, func(e error) tea.Msg { return resultMsg{err: e, text: output.String()} })()
@@ -422,10 +422,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "l":
 			m.page = 5
 			m.detail = ""
-			return m, task(func(ctx context.Context) (string, error) {
-				b, e := exec.CommandContext(ctx, "/usr/bin/journalctl", "-u", "fdpi.service", "-n", "80", "--no-pager", "-o", "short").CombinedOutput()
-				return string(b), e
-			})
+			return m, task(recentLogs)
 		case "esc":
 			m.detail = ""
 			m.search = ""
@@ -471,7 +468,7 @@ func (m Model) contentView() string {
 		case 0:
 			b.WriteString(m.dashboard())
 		case 4:
-			b.WriteString("inet fdpi · исходящий трафик · IPv4 + IPv6\nNFQUEUE 24000 · без движка трафик идёт напрямую\nTCP 80/443: первые 20 пакетов\nUDP 443: первые 12 пакетов при включённом QUIC\nДомен из Host/SNI проверяет nfqws2.\n\nДоменные профили не разделяют приложения.\nd — диагностика без изменения сети")
+			b.WriteString("inet fdpi · исходящий трафик · IPv4 + IPv6\n" + engineLabel() + " · без движка трафик идёт напрямую\nTCP 80/443: первые 20 пакетов\nUDP 443: первые 12 пакетов при включённом QUIC\nДомен из Host/SNI проверяет nfqws2.\n\nДоменные профили не разделяют приложения.\nd — диагностика без изменения сети")
 		case 5:
 			b.WriteString("l загрузить журнал · / поиск · j/k прокрутка\nДля чтения журнала могут потребоваться права.")
 		default:

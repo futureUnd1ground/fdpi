@@ -12,10 +12,7 @@ import (
 	"net/http/httptrace"
 	"regexp"
 	"strings"
-	"syscall"
 	"time"
-
-	"golang.org/x/sys/unix"
 )
 
 type EndpointResult struct {
@@ -51,17 +48,11 @@ func YouTubeResolved(ctx context.Context, iface string, addresses map[string]str
 
 	d := net.Dialer{Timeout: 5 * time.Second}
 	if iface != "" {
-		if _, err := net.InterfaceByName(iface); err != nil {
+		ctl, err := dialControl(iface)
+		if err != nil {
 			return YouTubeReport{Interface: iface, Checks: []EndpointResult{{Name: "Интерфейс", Error: err.Error()}}}
 		}
-		d.Control = func(_, _ string, c syscall.RawConn) error {
-			var err error
-			e := c.Control(func(fd uintptr) { err = unix.SetsockoptString(int(fd), unix.SOL_SOCKET, unix.SO_BINDTODEVICE, iface) })
-			if e != nil {
-				return e
-			}
-			return err
-		}
+		d.Control = ctl
 	}
 	dial := func(ctx context.Context, network, address string) (net.Conn, error) {
 		host, port, err := net.SplitHostPort(address)

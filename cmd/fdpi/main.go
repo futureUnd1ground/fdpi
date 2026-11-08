@@ -12,7 +12,6 @@ import (
 	"github.com/futureUnd1ground/fdpi/internal/tui"
 	"net"
 	"os"
-	"os/exec"
 	"os/signal"
 	"path/filepath"
 	"strings"
@@ -50,28 +49,14 @@ func userConfig() (config.Config, error) {
 	}
 	return c, e
 }
-func elevated(ctx context.Context, args ...string) error {
-	exe, e := os.Executable()
-	if e != nil {
-		return e
-	}
-	if os.Geteuid() == 0 {
-		return run(ctx, args)
-	}
-	c := exec.CommandContext(ctx, "sudo", append([]string{"--", exe}, args...)...)
-	c.Stdin = os.Stdin
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	return c.Run()
-}
 func unit(ctx context.Context, action string, replace bool) error {
-	if os.Geteuid() != 0 {
+	if !isRoot() {
 		if replace {
 			return elevated(ctx, action, "--replace")
 		}
 		return elevated(ctx, action)
 	}
-	lock, e := service.Lock("/etc/fdpi/.operation.lock")
+	lock, e := service.Lock(service.OperationLockPath())
 	if e != nil {
 		return e
 	}
@@ -88,7 +73,7 @@ func unit(ctx context.Context, action string, replace bool) error {
 }
 func run(ctx context.Context, args []string) error {
 	if len(args) == 0 {
-		if os.Geteuid() == 0 {
+		if tuiForbiddenForRoot() && isRoot() {
 			return fmt.Errorf("запускайте интерфейс без sudo; root нужен только для службы и административных действий")
 		}
 		st, e := os.Stdin.Stat()
@@ -109,7 +94,7 @@ func run(ctx context.Context, args []string) error {
 	}
 	switch args[0] {
 	case "tui":
-		if os.Geteuid() == 0 {
+		if tuiForbiddenForRoot() && isRoot() {
 			return fmt.Errorf("открывайте интерфейс без sudo")
 		}
 		c, e := userConfig()
@@ -148,6 +133,8 @@ func run(ctx context.Context, args []string) error {
     [--grep ТЕКСТ] [--category err|warning|info] — поиск и уровень записей
   theme [НАЗВАНИЕ]            Показать темы / выбрать тему
   update                     Инструкция по безопасному обновлению
+  service-install            Установить службу Windows и применить настройки (UAC)
+  service-remove             Остановить и удалить службу Windows (UAC)
 `)
 
 		return nil
@@ -169,13 +156,13 @@ func run(ctx context.Context, args []string) error {
 		}
 		return nil
 	case "daemon":
-		if os.Geteuid() != 0 {
-			return fmt.Errorf("для запуска фоновой службы нужны права root")
+		if !isRoot() {
+			return fmt.Errorf("для запуска фоновой службы нужны права администратора")
 		}
 		return service.Daemon()
 	case "cleanup":
-		if os.Geteuid() != 0 {
-			return fmt.Errorf("для удаления собственных сетевых правил нужны права root")
+		if !isRoot() {
+			return fmt.Errorf("для удаления собственных сетевых правил нужны права администратора")
 		}
 		return network.Cleanup(ctx)
 	case "apply":
@@ -183,8 +170,8 @@ func run(ctx context.Context, args []string) error {
 	case "rollback":
 		return elevated(ctx, "admin", "rollback")
 	case "admin":
-		if os.Geteuid() != 0 {
-			return fmt.Errorf("для административных действий нужны права root")
+		if !isRoot() {
+			return fmt.Errorf("для административных действий нужны права администратора")
 		}
 		if len(args) < 2 {
 			return fmt.Errorf("admin apply PATH | rollback")
@@ -196,7 +183,7 @@ func run(ctx context.Context, args []string) error {
 			}
 			return service.Apply(ctx, args[2])
 		case "rollback":
-			return service.Apply(ctx, "/etc/fdpi/previous.json")
+			return service.Apply(ctx, service.PreviousConfig)
 		case "accounting-on":
 			if len(args) != 2 {
 				return fmt.Errorf("admin accounting-on не принимает дополнительных аргументов")
@@ -207,9 +194,22 @@ func run(ctx context.Context, args []string) error {
 				return fmt.Errorf("admin accounting-persist не принимает дополнительных аргументов")
 			}
 			return service.PersistAccounting()
+		case "windows-setup":
+			if len(args) != 2 {
+				return fmt.Errorf("admin windows-setup не принимает дополнительных аргументов")
+			}
+			return adminWindowsSetup(ctx)
 		default:
 			return fmt.Errorf("неизвестная административная команда")
 		}
+	case "windows-setup":
+		return elevated(ctx, "admin", "windows-setup")
+	case "service-install":
+		return elevated(ctx, "admin", "windows-setup")
+	case "service-remove":
+		return elevated(ctx, "windows-remove")
+	case "windows-remove":
+		return adminWindowsRemove(ctx)
 	case "profiles", "strategies":
 		c, e := userConfig()
 		if e != nil {
@@ -282,7 +282,7 @@ func run(ctx context.Context, args []string) error {
 		if len(args) < 2 || len(args) > 3 || (len(args) == 3 && args[2] != "--json") {
 			return fmt.Errorf("fdpi lab СЕРВИС [--json]")
 		}
-		if os.Geteuid() != 0 {
+		if !isRoot() {
 			return elevated(ctx, args...)
 		}
 		r, e := diagnostics.Lab(ctx, args[1])
@@ -315,36 +315,7 @@ func run(ctx context.Context, args []string) error {
 		}
 		return nil
 	case "logs":
-		a := []string{"-u", "fdpi.service", "--no-pager", "-n", "200"}
-		for i := 1; i < len(args); i++ {
-			switch args[i] {
-			case "--follow":
-				a = append(a, "--follow")
-			case "--grep":
-				i++
-				if i >= len(args) {
-					return fmt.Errorf("после --grep укажите текст поиска")
-				}
-				a = append(a, "--grep", args[i])
-			case "--category":
-				i++
-				if i >= len(args) {
-					return fmt.Errorf("--category err|warning|info")
-				}
-				switch args[i] {
-				case "err", "warning", "info":
-					a = append(a, "--priority", args[i])
-				default:
-					return fmt.Errorf("неверная категория журнала: используйте err, warning или info")
-				}
-			default:
-				return fmt.Errorf("неизвестный параметр журнала")
-			}
-		}
-		c := exec.CommandContext(ctx, "/usr/bin/journalctl", a...)
-		c.Stdout = os.Stdout
-		c.Stderr = os.Stderr
-		return c.Run()
+		return runLogs(ctx, args[1:])
 	case "theme":
 		if len(args) == 1 {
 			for _, name := range tui.Themes {
@@ -363,7 +334,7 @@ func run(ctx context.Context, args []string) error {
 	case "setup":
 		return runSetup(ctx, args[1:])
 	case "update":
-		fmt.Println("В каталоге исходников: make check && make build && sudo make install\nЕсли проект находится в git, сначала проверьте обновления и выполните git pull --ff-only.\nДвижок: make engine собирает закреплённую версию. Перед её сменой прочитайте docs/ENGINE.md.\nЗагрузка и запуск удалённого кода автоматически не выполняются.")
+		fmt.Println(updateHint())
 		return nil
 	}
 	return fmt.Errorf("неизвестная команда %q; справка: fdpi --help", args[0])
@@ -374,7 +345,7 @@ func configure(ctx context.Context, args []string) error {
 		return nil
 	}
 	if args[0] == "system" {
-		if os.Geteuid() != 0 {
+		if !isRoot() {
 			return elevated(ctx, "config", "system")
 		}
 		c, e := config.Load(service.SystemConfig)

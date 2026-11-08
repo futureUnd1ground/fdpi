@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-// ErrConflict denotes a permanent conflict that restarting the daemon cannot fix.
-var ErrConflict = errors.New("конфликт сетевых движков")
 var otherUnits = []string{"zapret.service", "zapret2.service"}
 
 func OtherActive(ctx context.Context) []string {
