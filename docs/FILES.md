@@ -28,7 +28,6 @@
 - [docs/SPOTIFY_RU.md](../docs/SPOTIFY_RU.md)
 - [docs/THEMES.md](../docs/THEMES.md)
 - [docs/VALIDATION.md](../docs/VALIDATION.md)
-- [docs/assets/banner.png](../docs/assets/banner.png)
 - [docs/assets/dashboard.png](../docs/assets/dashboard.png)
 - [docs/assets/installation.png](../docs/assets/installation.png)
 - [docs/assets/logs.png](../docs/assets/logs.png)

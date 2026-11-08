@@ -1,7 +1,5 @@
 <div align="center">
 
-![FDPI — Fast DPI Bypass](docs/assets/banner.png)
-
 [![Linux](https://img.shields.io/badge/Linux-CachyOS%20%2F%20Arch-64d9f2?style=for-the-badge&labelColor=10111b)](docs/INSTALL_RU.md)
 [![Go](https://img.shields.io/badge/Go-1.24%2B-ad91ff?style=for-the-badge&labelColor=10111b)](go.mod)
 [![License](https://img.shields.io/badge/License-MIT-79ee9a?style=for-the-badge&labelColor=10111b)](LICENSE)
