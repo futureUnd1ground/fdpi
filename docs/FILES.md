@@ -22,6 +22,7 @@
 - [cmd/fdpi/wizard.go](../cmd/fdpi/wizard.go)
 - [cmd/fdpi/wizard_test.go](../cmd/fdpi/wizard_test.go)
 - [configs/default.json](../configs/default.json)
+- [docs/DPI_RU.md](../docs/DPI_RU.md)
 - [docs/ENGINE.md](../docs/ENGINE.md)
 - [docs/INSTALL_RU.md](../docs/INSTALL_RU.md)
 - [docs/SPOTIFY_RU.md](../docs/SPOTIFY_RU.md)
