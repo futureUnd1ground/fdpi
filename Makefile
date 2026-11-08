@@ -27,5 +27,5 @@ dist-windows: engine-windows
 	cp third_party/windivert/x64/WinDivert64.sys build/windows/
 	cp configs/default.json build/windows/config.json
 	rm -f build/fdpi-windows-amd64.zip
-	cd build/windows && 7z a -tzip -r ../fdpi-windows-amd64.zip fdpi.exe winws2.exe WinDivert.dll WinDivert64.sys config.json lua ZAPRET-LICENSE engine.commit ../../README_WINDOWS.md >/dev/null
+	cd build/windows && { command -v zip >/dev/null && zip -qr ../fdpi-windows-amd64.zip fdpi.exe winws2.exe WinDivert.dll WinDivert64.sys config.json lua ZAPRET-LICENSE engine.commit ../../README_WINDOWS.md || 7z a -tzip -r ../fdpi-windows-amd64.zip fdpi.exe winws2.exe WinDivert.dll WinDivert64.sys config.json lua ZAPRET-LICENSE engine.commit ../../README_WINDOWS.md >/dev/null; }
 	@echo "Готово: build/fdpi-windows-amd64.zip"
