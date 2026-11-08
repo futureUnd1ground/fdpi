@@ -73,7 +73,8 @@ done
 "$CC" -static -Wl,--gc-sections -o build/winws2.exe "$OBJ"/*.o \
     "$DEPS/liblua-mingw.a" "$DEPS/libz.a" \
     -L"$NFQ/windows/windivert" -lwindivert64 \
-    -lws2_32 -liphlpapi -lole32 -loleaut32 -luuid -lntdll -lwlanapi -ladvapi32 -lshlwapi
+    -lws2_32 -liphlpapi -lole32 -loleaut32 -luuid -lntdll -lwlanapi -ladvapi32 -lshlwapi \
+    -lwinpthread
 
 mkdir -p build/windows/lua
 cp build/winws2.exe build/windows/

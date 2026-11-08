@@ -155,14 +155,3 @@ static int zc_setsockopt_wrap(SOCKET s, int l, int o, const void *v, int n) { re
 #define setsockopt zc_setsockopt_wrap
 
 #define mkdir(p, m) _mkdir(p)
-
-/* clock_gettime/nanosleep/usleep for older mingw-w64 runtimes (e.g. Ubuntu) */
-#ifndef CLOCK_REALTIME
-#define CLOCK_REALTIME 0
-#define CLOCK_MONOTONIC 1
-typedef int clockid_t;
-int clock_gettime(clockid_t clk, struct timespec *ts);
-int nanosleep(const struct timespec *req, struct timespec *rem);
-int usleep(unsigned int usec);
-unsigned int sleep(unsigned int seconds);
-#endif

@@ -162,27 +162,3 @@ int getrandom(void *buf, size_t buflen, unsigned int flags) {
     }
     return 0;
 }
-
-// ---- clock_gettime/nanosleep for older mingw-w64 (Ubuntu) ----
-#ifndef CLOCK_REALTIME
-#define ZC_HAVE_CLOCK_SHIM 1
-#endif
-#ifdef ZC_HAVE_CLOCK_SHIM
-int clock_gettime(clockid_t clk, struct timespec *ts) {
-    (void)clk;
-    FILETIME ft;
-    GetSystemTimePreciseAsFileTime(&ft);
-    unsigned long long ticks = ((unsigned long long)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
-    unsigned long long secs = ticks / 10000000ULL - 11644473600ULL;
-    ts->tv_sec = (time_t)secs;
-    ts->tv_nsec = (long)((ticks % 10000000ULL) * 100);
-    return 0;
-}
-int nanosleep(const struct timespec *req, struct timespec *rem) {
-    (void)rem;
-    Sleep((DWORD)(req->tv_sec * 1000 + req->tv_nsec / 1000000));
-    return 0;
-}
-int usleep(unsigned int usec) { Sleep(usec / 1000 + 1); return 0; }
-unsigned int sleep(unsigned int seconds) { Sleep(seconds * 1000); return 0; }
-#endif
