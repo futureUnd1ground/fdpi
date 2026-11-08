@@ -13,7 +13,7 @@ import (
 	"unicode"
 )
 
-const ApplicationVersion = "0.4.0"
+const ApplicationVersion = "0.4.1"
 
 type Strategy struct {
 	Protocols   []string `json:"protocols"`

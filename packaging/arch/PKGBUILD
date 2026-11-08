@@ -1,6 +1,6 @@
-# Local source package: run make dist; cp build/fdpi-0.4.0.tar.gz packaging/arch/
+# Local source package: run make dist; cp build/fdpi-0.4.1.tar.gz packaging/arch/
 pkgname=fdpi
-pkgver=0.4.0
+pkgver=0.4.1
 pkgrel=1
 pkgdesc='Domain-oriented nfqws2 manager with Go terminal UI'
 arch=('x86_64' 'aarch64')

@@ -26,6 +26,8 @@ type refreshMsg struct {
 	state   service.Status
 	text    string
 }
+type removedMsg struct{}
+
 type resultMsg struct {
 	text string
 	err  error
@@ -74,6 +76,17 @@ func operation(args []string) tea.Cmd {
 		cmd := operationCommand(args)
 		cmd.Stdout = io.MultiWriter(os.Stdout, &output)
 		cmd.Stderr = io.MultiWriter(os.Stderr, &output)
+		if len(args) > 0 && args[0] == "uninstall" {
+			return tea.ExecProcess(cmd, func(e error) tea.Msg {
+				if e != nil {
+					return resultMsg{err: e, text: output.String()}
+				}
+				if err := service.RemoveUserLauncher(); err != nil {
+					return resultMsg{err: err, text: "Системные файлы удалены; не удалось убрать пользовательскую ссылку fdpi"}
+				}
+				return removedMsg{}
+			})()
+		}
 		return tea.ExecProcess(cmd, func(e error) tea.Msg { return resultMsg{err: e, text: output.String()} })()
 	}
 }
@@ -106,6 +119,7 @@ func (m Model) rows() []string {
 		for _, name := range Themes {
 			rows = append(rows, ThemeTitle(name))
 		}
+		rows = append(rows, "Удалить FDPI")
 	}
 	return rows
 }
@@ -154,6 +168,8 @@ func (m *Model) edit(kind string, index int) {
 }
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch x := msg.(type) {
+	case removedMsg:
+		return m, tea.Quit
 	case tea.WindowSizeMsg:
 		m.width = x.Width
 		m.height = x.Height
@@ -254,6 +270,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, operation(args)
 			}
 			if k == "esc" || k == "n" {
+				m.pending = nil
 				m.confirm = ""
 				m.deleteProfile = -1
 			}
@@ -385,7 +402,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "enter":
 			i := m.index()
-			if m.page == 6 && i >= 0 {
+			if m.page == 6 && i == len(Themes) {
+				m.confirm = "Удалить FDPI с компьютера? Служба остановится, автозапуск отключится, установленные файлы будут удалены. Настройки сохранятся."
+				m.pending = []string{"uninstall", "--yes"}
+			} else if m.page == 6 && i >= 0 && i < len(Themes) {
 				m.theme = Themes[i]
 				m.palette = Theme(m.theme)
 				if e := SaveTheme(m.theme); e != nil {

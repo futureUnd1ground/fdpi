@@ -27,7 +27,7 @@ FDPI — терминальная утилита для Linux и Windows с ру
 ![Главная настоящего FDPI](docs/assets/dashboard.png)
 
 <table>
-<tr><td width="50%"><img src="docs/assets/services.png" alt="Сервисы: YouTube, Steam, Discord, Spotify Desktop"><br><b>Сервисы</b> — стрелки, пробел, свои домены.</td><td width="50%"><img src="docs/assets/installation.png" alt="Интерактивная установка"><br><b>Установка</b> — действия по шагам и вывод ошибок.</td></tr>
+<tr><td width="50%"><img src="docs/assets/services.png" alt="Сервисы: YouTube, Steam, Discord"><br><b>Сервисы</b> — стрелки, пробел, свои домены.</td><td width="50%"><img src="docs/assets/installation.png" alt="Интерактивная установка"><br><b>Установка</b> — действия по шагам и вывод ошибок.</td></tr>
 <tr><td colspan="2"><img src="docs/assets/service-editor.png" alt="Форма добавления сервиса"><br><b>Редактор</b> — название, ссылки, стратегия и включение.</td></tr>
 </table>
 
@@ -72,7 +72,6 @@ fdpi                         # интерфейс / первый запуск
 fdpi setup                   # отдельный мастер
 fdpi tui                     # сразу интерфейс
 fdpi test-service youtube    # HTML, JPEG и JSON API
-fdpi config enable spotify on
 fdpi apply                   # применить выбранные профили
 ```
 
@@ -119,8 +118,6 @@ cd C:\FDPI
 - Go vet, unit tests, race detector и dry-run настоящего nfqws2.
 
 Это результаты конкретной сети, а не обещание универсального обхода.
-Spotify Desktop использует отдельный профиль HTTP/TLS; воспроизведение,
-нативный AP-протокол, регион и ограничения аккаунта отдельно не гарантируются.
 Подробности и границы доказательств — в [отчёте](docs/VALIDATION.md).
 
 ## Устройство
@@ -139,6 +136,18 @@ FDPI содержит собственный Go-код управления и �
 явные внешние зависимости MIT, собираемые без изменения из закреплённого commit.
 Их исходники не скопированы в Go-пакеты FDPI. Лицензия upstream устанавливается
 вместе с движком.
+
+## Удаление
+
+В программе: **Настройки → Удалить FDPI → Enter → подтверждение**.
+Потребуются права администратора. Служба и автозапуск отключаются,
+удаляются установленные файлы и собственные сетевые правила FDPI.
+Настройки, профили, исходники и чужие файлы сохраняются.
+
+![Подтверждение удаления](docs/assets/uninstall.png)
+
+Альтернатива: `fdpi uninstall --yes`. Для установки через пакетный менеджер
+используйте `sudo pacman -R fdpi`, чтобы сохранить целостность базы пакетов.
 
 ## Разработка
 
@@ -161,7 +170,7 @@ make netns  # user/network namespace, настоящий движок
 Интерфейс и основные сообщения — на русском.
 
 
-FDPI 0.4.0 — утилита на Go: на Linux она управляет **настоящим nfqws2**
+FDPI 0.4.1 — утилита на Go: на Linux она управляет **настоящим nfqws2**
 (NFQUEUE/nftables, systemd), на Windows 10/11 x64 — **winws2** из zapret2
 (WinDivert, служба). Основная платформа — CachyOS/Arch Linux. Обработка пакетов
 выполняется внешним движком, а не Go. Это первая реализация, ещё не
@@ -295,7 +304,7 @@ sudo sysctl -w net.netfilter.nf_conntrack_acct=1
 
 ```bash
 make dist
-cp build/fdpi-0.4.0.tar.gz packaging/arch/
+cp build/fdpi-0.4.1.tar.gz packaging/arch/
 cd packaging/arch
 makepkg -si
 ```

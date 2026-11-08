@@ -1,4 +1,4 @@
-# Файлы FDPI 0.4.0
+# Файлы FDPI 0.4.1
 
 Собственный код и оформление; внешние зависимости находятся в игнорируемом build/.
 
@@ -25,7 +25,6 @@
 - [docs/DPI_RU.md](../docs/DPI_RU.md)
 - [docs/ENGINE.md](../docs/ENGINE.md)
 - [docs/INSTALL_RU.md](../docs/INSTALL_RU.md)
-- [docs/SPOTIFY_RU.md](../docs/SPOTIFY_RU.md)
 - [docs/THEMES.md](../docs/THEMES.md)
 - [docs/VALIDATION.md](../docs/VALIDATION.md)
 - [docs/assets/dashboard.png](../docs/assets/dashboard.png)
@@ -37,6 +36,7 @@
 - [docs/assets/settings.png](../docs/assets/settings.png)
 - [docs/assets/strategies.png](../docs/assets/strategies.png)
 - [docs/assets/strategy-lab.png](../docs/assets/strategy-lab.png)
+- [docs/assets/uninstall.png](../docs/assets/uninstall.png)
 - [docs/evidence/benchmarks.txt](../docs/evidence/benchmarks.txt)
 - [docs/evidence/check-0.3.txt](../docs/evidence/check-0.3.txt)
 - [docs/evidence/check-0.4.txt](../docs/evidence/check-0.4.txt)
@@ -52,7 +52,6 @@
 - [docs/evidence/netns-0.4-race.txt](../docs/evidence/netns-0.4-race.txt)
 - [docs/evidence/netns-race.txt](../docs/evidence/netns-race.txt)
 - [docs/evidence/netns.txt](../docs/evidence/netns.txt)
-- [docs/evidence/spotify-direct-0.4.json](../docs/evidence/spotify-direct-0.4.json)
 - [docs/evidence/video-direct-0.3.json](../docs/evidence/video-direct-0.3.json)
 - [docs/evidence/youtube-direct-0.3.json](../docs/evidence/youtube-direct-0.3.json)
 - [go.mod](../go.mod)
@@ -77,6 +76,8 @@
 - [internal/service/payload_test.go](../internal/service/payload_test.go)
 - [internal/service/service.go](../internal/service/service.go)
 - [internal/service/service_test.go](../internal/service/service_test.go)
+- [internal/service/uninstall.go](../internal/service/uninstall.go)
+- [internal/service/uninstall_test.go](../internal/service/uninstall_test.go)
 - [internal/service/version.go](../internal/service/version.go)
 - [internal/tui/forms.go](../internal/tui/forms.go)
 - [internal/tui/forms_test.go](../internal/tui/forms_test.go)

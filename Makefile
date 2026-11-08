@@ -21,7 +21,7 @@ bench:
 	./scripts/benchmark.sh
 dist:
 	mkdir -p build
-	tar --exclude=./build --exclude=./.git -czf build/fdpi-0.4.0.tar.gz --transform='s,^\.,fdpi-0.4.0,' .
+	tar --exclude=./build --exclude=./.git -czf build/fdpi-0.4.1.tar.gz --transform='s,^\.,fdpi-0.4.1,' .
 dist-windows: engine-windows
 	GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o build/windows/fdpi.exe ./cmd/fdpi
 	cp third_party/windivert/x64/WinDivert64.sys build/windows/

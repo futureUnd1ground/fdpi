@@ -1,6 +1,7 @@
 package tui
 
 import (
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/futureUnd1ground/fdpi/internal/config"
 	"strings"
@@ -33,5 +34,21 @@ func checkFrame(t *testing.T, view string, size [2]int) {
 		if ansi.StringWidth(line) > size[0] {
 			t.Fatalf("width %d exceeds %d", ansi.StringWidth(line), size[0])
 		}
+	}
+}
+
+func TestUninstallRequiresConfirmation(t *testing.T) {
+	m := New(config.Default(), "unused")
+	m.page = 6
+	m.cursor = len(Themes)
+	v, cmd := m.Update(tea.KeyMsg{Type: tea.KeyEnter})
+	m = v.(Model)
+	if cmd != nil || m.confirm == "" || len(m.pending) != 2 || m.pending[0] != "uninstall" {
+		t.Fatal("missing uninstall confirmation")
+	}
+	v, cmd = m.Update(tea.KeyMsg{Type: tea.KeyEsc})
+	m = v.(Model)
+	if cmd != nil || m.confirm != "" {
+		t.Fatal("cancel failed")
 	}
 }

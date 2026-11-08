@@ -109,6 +109,7 @@ func run(ctx context.Context, args []string) error {
 		fmt.Print(`FDPI — быстрый обход DPI
 Использование: fdpi [команда]
   без команды                Открыть интерфейс на русском языке
+  uninstall --yes            Удалить установленный FDPI, сохранив настройки
   setup                      TUI установки: стрелки, пробел и Enter
   tui                        Основной TUI без мастера первого запуска
   start|stop|restart          Запустить / остановить / перезапустить службу
@@ -169,6 +170,21 @@ func run(ctx context.Context, args []string) error {
 		return elevated(ctx, "admin", "apply", config.UserPath())
 	case "rollback":
 		return elevated(ctx, "admin", "rollback")
+	case "uninstall":
+		if len(args) != 2 || args[1] != "--yes" {
+			return fmt.Errorf("удаление требует подтверждения: fdpi uninstall --yes; настройки сохранятся")
+		}
+		if !isRoot() {
+			if err := elevated(ctx, args...); err != nil {
+				return err
+			}
+			return service.RemoveUserLauncher()
+		}
+		if err := service.Uninstall(ctx); err != nil {
+			return err
+		}
+		fmt.Println("Удаление FDPI завершено. Настройки и профили сохранены; на Windows часть файлов удалится после перезагрузки.")
+		return nil
 	case "admin":
 		if !isRoot() {
 			return fmt.Errorf("для административных действий нужны права администратора")
