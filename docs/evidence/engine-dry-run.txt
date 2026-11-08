@@ -1,0 +1,22 @@
+=== RUN   TestHostlistAndCatchall
+--- PASS: TestHostlistAndCatchall (0.00s)
+=== RUN   TestRealEngineDryRun
+=== RUN   TestRealEngineDryRun/light
+=== RUN   TestRealEngineDryRun/balanced
+=== RUN   TestRealEngineDryRun/aggressive
+=== RUN   TestRealEngineDryRun/tcp-split
+=== RUN   TestRealEngineDryRun/tls-focus
+=== RUN   TestRealEngineDryRun/quic-focus
+=== RUN   TestRealEngineDryRun/ttl-fake
+=== RUN   TestRealEngineDryRun/http-host
+--- PASS: TestRealEngineDryRun (0.01s)
+    --- PASS: TestRealEngineDryRun/light (0.00s)
+    --- PASS: TestRealEngineDryRun/balanced (0.00s)
+    --- PASS: TestRealEngineDryRun/aggressive (0.00s)
+    --- PASS: TestRealEngineDryRun/tcp-split (0.00s)
+    --- PASS: TestRealEngineDryRun/tls-focus (0.00s)
+    --- PASS: TestRealEngineDryRun/quic-focus (0.00s)
+    --- PASS: TestRealEngineDryRun/ttl-fake (0.00s)
+    --- PASS: TestRealEngineDryRun/http-host (0.00s)
+PASS
+ok  	github.com/fdpi/fdpi/internal/engine	0.012s

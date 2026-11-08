@@ -1,0 +1,148 @@
+=== RUN   TestRulesScope
+--- PASS: TestRulesScope (0.00s)
+=== RUN   TestNetnsApplyCleanup
+--- PASS: TestNetnsApplyCleanup (0.10s)
+PASS
+ok  	github.com/fdpi/fdpi/internal/network	1.114s
+=== RUN   TestAccountingCreateAndPreserve
+--- PASS: TestAccountingCreateAndPreserve (0.00s)
+=== RUN   TestAccountingRejectsSymlink
+--- PASS: TestAccountingRejectsSymlink (0.00s)
+=== RUN   TestControlRequiresExplicitReplacement
+--- PASS: TestControlRequiresExplicitReplacement (0.00s)
+=== RUN   TestControlRestoresForeignServicesOnFailedStart
+--- PASS: TestControlRestoresForeignServicesOnFailedStart (0.00s)
+=== RUN   TestEnableReplacementDoesNotStopRunningForeignServices
+--- PASS: TestEnableReplacementDoesNotStopRunningForeignServices (0.00s)
+=== RUN   TestNetnsPeer
+    payload_test.go:29: peer helper
+--- SKIP: TestNetnsPeer (0.00s)
+=== RUN   TestNetnsPayload
+Обработка FDPI включена: NFQUEUE 24000, без слушателя трафик идёт напрямую
+    payload_test.go:284: light observed IPv4 TCP payload lengths on veth: HTTP=map[1:1 110:1] TLS=map[1:1 24:1 64:1 133:1 306:1 1208:1]
+    payload_test.go:296: light IPv4+IPv6 exact HTTP+HTTPS payload delivered; table inet fdpi {
+        	comment "fdpi-managed-v1"
+        	chain output {
+        		type filter hook output priority mangle; policy accept;
+        		meta mark & 0x20000000 != 0x00000000 return
+        		oifname "lo" return
+        		tcp dport { 80, 443 } ct original packets 1-20 counter packets 70 bytes 8042 queue flags bypass to 24000
+        	}
+        }
+TERM received !
+self-built version Nov  8 2026 13:20:21 lua_compat_ver 6
+
+we have 2 user defined desync profile(s) and default low priority profile 0
+we have 0 user defined desync template(s)
+Loading hostlist /tmp/TestNetnsPayload1058919000/001/youtube.txt
+loading plain text list
+Loaded 2 hosts from /tmp/TestNetnsPayload1058919000/001/youtube.txt
+Running as UID=0 GID=0
+initializing raw sockets bind-fix4=1 bind-fix6=1
+LUA v5.5
+opening nfq library handle
+unbinding existing nf_queue handler for AF_INET (if any)
+binding nfnetlink_queue as nf_queue handler for AF_INET
+unbinding existing nf_queue handler for AF_INET6 (if any)
+binding nfnetlink_queue as nf_queue handler for AF_INET6
+binding this socket to queue '24000'
+setting copy_packet mode
+quit requested
+unbinding from queue 24000
+closing nfq library handle
+Обработка FDPI включена: NFQUEUE 24000, без слушателя трафик идёт напрямую
+    payload_test.go:284: balanced observed IPv4 TCP payload lengths on veth: HTTP=map[2:1 23:1 86:1 263:1] TLS=map[24:1 64:1 120:1 133:1 187:1 680:1 1208:1]
+    payload_test.go:296: balanced IPv4+IPv6 exact HTTP+HTTPS payload delivered; table inet fdpi {
+        	comment "fdpi-managed-v1"
+        	chain output {
+        		type filter hook output priority mangle; policy accept;
+        		meta mark & 0x20000000 != 0x00000000 return
+        		oifname "lo" return
+        		tcp dport { 80, 443 } ct original packets 1-20 counter packets 64 bytes 7646 queue flags bypass to 24000
+        	}
+        }
+TERM received !
+self-built version Nov  8 2026 13:20:21 lua_compat_ver 6
+
+we have 2 user defined desync profile(s) and default low priority profile 0
+we have 0 user defined desync template(s)
+Loading hostlist /tmp/TestNetnsPayload1058919000/002/youtube.txt
+loading plain text list
+Loaded 2 hosts from /tmp/TestNetnsPayload1058919000/002/youtube.txt
+Running as UID=0 GID=0
+initializing raw sockets bind-fix4=1 bind-fix6=1
+LUA v5.5
+opening nfq library handle
+unbinding existing nf_queue handler for AF_INET (if any)
+binding nfnetlink_queue as nf_queue handler for AF_INET
+unbinding existing nf_queue handler for AF_INET6 (if any)
+binding nfnetlink_queue as nf_queue handler for AF_INET6
+binding this socket to queue '24000'
+setting copy_packet mode
+quit requested
+unbinding from queue 24000
+closing nfq library handle
+Обработка FDPI включена: NFQUEUE 24000, без слушателя трафик идёт напрямую
+    payload_test.go:284: tls-focus observed IPv4 TCP payload lengths on veth: HTTP=map[25:1 86:1] TLS=map[24:1 64:1 120:1 133:1 187:1 1208:1]
+    payload_test.go:296: tls-focus IPv4+IPv6 exact HTTP+HTTPS payload delivered; table inet fdpi {
+        	comment "fdpi-managed-v1"
+        	chain output {
+        		type filter hook output priority mangle; policy accept;
+        		meta mark & 0x20000000 != 0x00000000 return
+        		oifname "lo" return
+        		tcp dport { 80, 443 } ct original packets 1-20 counter packets 70 bytes 8018 queue flags bypass to 24000
+        	}
+        }
+TERM received !
+self-built version Nov  8 2026 13:20:21 lua_compat_ver 6
+
+we have 2 user defined desync profile(s) and default low priority profile 0
+we have 0 user defined desync template(s)
+Loading hostlist /tmp/TestNetnsPayload1058919000/003/youtube.txt
+loading plain text list
+Loaded 2 hosts from /tmp/TestNetnsPayload1058919000/003/youtube.txt
+Running as UID=0 GID=0
+initializing raw sockets bind-fix4=1 bind-fix6=1
+LUA v5.5
+opening nfq library handle
+unbinding existing nf_queue handler for AF_INET (if any)
+binding nfnetlink_queue as nf_queue handler for AF_INET
+unbinding existing nf_queue handler for AF_INET6 (if any)
+binding nfnetlink_queue as nf_queue handler for AF_INET6
+binding this socket to queue '24000'
+setting copy_packet mode
+quit requested
+unbinding from queue 24000
+closing nfq library handle
+--- PASS: TestNetnsPayload (0.44s)
+=== RUN   TestExclusiveLock
+--- PASS: TestExclusiveLock (0.00s)
+=== RUN   TestNetnsSupervision
+Обработка FDPI включена: NFQUEUE 24000, без слушателя трафик идёт напрямую
+TERM received !
+self-built version Nov  8 2026 13:20:21 lua_compat_ver 6
+
+we have 2 user defined desync profile(s) and default low priority profile 0
+we have 0 user defined desync template(s)
+Loading hostlist /tmp/TestNetnsSupervision1796569236/001/youtube.txt
+loading plain text list
+Loaded 5 hosts from /tmp/TestNetnsSupervision1796569236/001/youtube.txt
+Running as UID=0 GID=0
+initializing raw sockets bind-fix4=1 bind-fix6=1
+LUA v5.5
+opening nfq library handle
+unbinding existing nf_queue handler for AF_INET (if any)
+binding nfnetlink_queue as nf_queue handler for AF_INET
+unbinding existing nf_queue handler for AF_INET6 (if any)
+binding nfnetlink_queue as nf_queue handler for AF_INET6
+binding this socket to queue '24000'
+setting copy_packet mode
+quit requested
+unbinding from queue 24000
+closing nfq library handle
+Обработка FDPI включена: NFQUEUE 24000, без слушателя трафик идёт напрямую
+--- PASS: TestNetnsSupervision (0.15s)
+=== RUN   TestFailedApplyRestoresConfig
+--- PASS: TestFailedApplyRestoresConfig (0.01s)
+PASS
+ok  	github.com/fdpi/fdpi/internal/service	1.609s

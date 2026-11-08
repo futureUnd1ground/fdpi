@@ -1,0 +1,31 @@
+{
+  "backup": "<local-backup>",
+  "selected": "balanced",
+  "baseline_ok": false,
+  "trials": [
+    {
+      "strategy": "baseline",
+      "result": {
+        "exit": 1,
+        "out": "{\n  \"interface\": \"enp2s0\",\n  \"checks\": [\n    {\n      \"name\": \"Главная YouTube\",\n      \"http\": 0,\n      \"bytes\": 0,\n      \"ok\": false,\n      \"error\": \"Get \\\"https://www.youtube.com/\\\": context deadline exceeded\"\n    },\n    {\n      \"name\": \"Изображение YouTube\",\n      \"http\": 0,\n      \"bytes\": 0,\n      \"ok\": false,\n      \"error\": \"Get \\\"https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg\\\": context deadline exceeded\"\n    },\n    {\n      \"name\": \"API главной YouTube\",\n      \"http\": 0,\n      \"bytes\": 0,\n      \"ok\": false,\n      \"error\": \"Пропущен: версия клиента не получена из страницы\"\n    }\n  ],\n  \"ok\": false,\n  \"note\": \"Проверены анонимная главная, API и изображение. Воспроизведение видео, QUIC и персональная лента не проверены. Без --interface запросы могут идти через VPN. DNS использует системный резолвер.\"\n}\n",
+        "err": "fdpi: проверка YouTube выявила ошибки\n"
+      }
+    },
+    {
+      "strategy": "light",
+      "result": {
+        "exit": 1,
+        "out": "{\n  \"interface\": \"enp2s0\",\n  \"checks\": [\n    {\n      \"name\": \"Главная YouTube\",\n      \"http\": 0,\n      \"bytes\": 0,\n      \"ok\": false,\n      \"error\": \"Get \\\"https://www.youtube.com/\\\": context deadline exceeded\"\n    },\n    {\n      \"name\": \"Изображение YouTube\",\n      \"http\": 0,\n      \"bytes\": 0,\n      \"ok\": false,\n      \"error\": \"Get \\\"https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg\\\": context deadline exceeded\"\n    },\n    {\n      \"name\": \"API главной YouTube\",\n      \"http\": 0,\n      \"bytes\": 0,\n      \"ok\": false,\n      \"error\": \"Пропущен: версия клиента не получена из страницы\"\n    }\n  ],\n  \"ok\": false,\n  \"note\": \"Проверены анонимная главная, API и изображение. Воспроизведение видео, QUIC и персональная лента не проверены. Без --interface запросы могут идти через VPN. DNS использует системный резолвер.\"\n}\n",
+        "err": "fdpi: проверка YouTube выявила ошибки\n"
+      }
+    },
+    {
+      "strategy": "balanced",
+      "result": {
+        "exit": 0,
+        "out": "{\n  \"interface\": \"enp2s0\",\n  \"checks\": [\n    {\n      \"name\": \"Главная YouTube\",\n      \"http\": 200,\n      \"bytes\": 977085,\n      \"local_address\": \"192.0.2.10:40344\",\n      \"ok\": true\n    },\n    {\n      \"name\": \"Изображение YouTube\",\n      \"http\": 200,\n      \"bytes\": 21011,\n      \"local_address\": \"192.0.2.10:33686\",\n      \"ok\": true\n    },\n    {\n      \"name\": \"API главной YouTube\",\n      \"http\": 200,\n      \"bytes\": 18102,\n      \"local_address\": \"192.0.2.10:40360\",\n      \"ok\": true\n    }\n  ],\n  \"ok\": true,\n  \"note\": \"Проверены анонимная главная, API и изображение. Воспроизведение видео, QUIC и персональная лента не проверены. Без --interface запросы могут идти через VPN. DNS использует системный резолвер.\"\n}\n",
+        "err": ""
+      }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "stage": "direct-video-range",
+  "format": "394",
+  "codec": "av01.0.00M.08",
+  "host": "rr3---sn-xguxaxjvh-bvwe.googlevideo.com",
+  "exit": 0,
+  "result": "206 192.0.2.10 1048576 0.162629",
+  "error": ""
+}

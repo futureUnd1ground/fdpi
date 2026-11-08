@@ -1,0 +1,20 @@
+test -z "$(gofmt -l cmd internal)"
+go vet ./...
+go test ./...
+ok  	github.com/fdpi/fdpi/cmd/fdpi	0.135s
+ok  	github.com/fdpi/fdpi/internal/config	(cached)
+ok  	github.com/fdpi/fdpi/internal/diagnostics	0.027s
+ok  	github.com/fdpi/fdpi/internal/engine	(cached)
+ok  	github.com/fdpi/fdpi/internal/network	(cached)
+ok  	github.com/fdpi/fdpi/internal/service	(cached)
+ok  	github.com/fdpi/fdpi/internal/tui	0.008s
+go test -race ./...
+ok  	github.com/fdpi/fdpi/cmd/fdpi	1.154s
+ok  	github.com/fdpi/fdpi/internal/config	(cached)
+ok  	github.com/fdpi/fdpi/internal/diagnostics	1.147s
+ok  	github.com/fdpi/fdpi/internal/engine	(cached)
+ok  	github.com/fdpi/fdpi/internal/network	(cached)
+ok  	github.com/fdpi/fdpi/internal/service	(cached)
+ok  	github.com/fdpi/fdpi/internal/tui	1.029s
+mkdir -p build
+go build -trimpath -o build/fdpi ./cmd/fdpi

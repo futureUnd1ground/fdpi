@@ -1,0 +1,37 @@
+# Local source package: run make dist; cp build/fdpi-0.4.0.tar.gz packaging/arch/
+pkgname=fdpi
+pkgver=0.4.0
+pkgrel=1
+pkgdesc='Domain-oriented nfqws2 manager with Go terminal UI'
+arch=('x86_64' 'aarch64')
+url='https://github.com/futureUnd1ground/fdpi'
+license=('MIT')
+depends=('nftables' 'systemd' 'libnetfilter_queue' 'libnfnetlink' 'libmnl' 'zlib' 'lua' 'sudo')
+makedepends=('go>=1.24' 'git')
+backup=('etc/fdpi/config.json')
+source=("fdpi-$pkgver.tar.gz" 'zapret2::git+https://github.com/bol-van/zapret2.git#commit=9b9b929f837978173d787a5773a47a91d90f7f81')
+sha256sums=('SKIP' 'SKIP')
+build() {
+  cd "$srcdir/fdpi-$pkgver"
+  export CGO_ENABLED=0
+  go build -trimpath -o build/fdpi ./cmd/fdpi
+  make -C "$srcdir/zapret2/nfq2" LUA_JIT=0 LUA_CFLAGS="$(pkg-config --cflags lua)" LUA_LIB="$(pkg-config --libs lua)"
+}
+check() {
+  cd "$srcdir/fdpi-$pkgver"
+  go vet ./...
+  go test ./...
+}
+package() {
+  cd "$srcdir/fdpi-$pkgver"
+  install -Dm755 build/fdpi "$pkgdir/usr/bin/fdpi"
+  install -Dm755 "$srcdir/zapret2/nfq2/nfqws2" "$pkgdir/usr/lib/fdpi/nfqws2"
+  install -Dm644 "$srcdir/zapret2/lua/zapret-lib.lua" "$pkgdir/usr/lib/fdpi/lua/zapret-lib.lua"
+  install -Dm644 "$srcdir/zapret2/lua/zapret-antidpi.lua" "$pkgdir/usr/lib/fdpi/lua/zapret-antidpi.lua"
+  install -Dm644 packaging/systemd/fdpi.service "$pkgdir/usr/lib/systemd/system/fdpi.service"
+  install -Dm600 configs/default.json "$pkgdir/etc/fdpi/config.json"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/fdpi/LICENSE"
+  install -Dm644 "$srcdir/zapret2/docs/LICENSE.txt" "$pkgdir/usr/share/licenses/fdpi/ZAPRET-LICENSE"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/fdpi/README.md"
+  install -Dm644 docs/INSTALL_RU.md "$pkgdir/usr/share/doc/fdpi/INSTALL_RU.md"
+}

@@ -1,0 +1,38 @@
+[Unit]
+Description=FDPI domain-oriented DPI bypass (nfqws2)
+Documentation=file:/usr/share/doc/fdpi/README.md
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=notify
+NotifyAccess=main
+ExecStart=/usr/bin/fdpi daemon
+ExecStopPost=/usr/bin/fdpi cleanup
+Restart=on-failure
+RestartSec=3
+RestartPreventExitStatus=78
+TimeoutStartSec=20
+TimeoutStopSec=10
+KillMode=control-group
+RuntimeDirectory=fdpi
+RuntimeDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=yes
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW CAP_SETUID CAP_SETGID CAP_SETPCAP
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_NETLINK AF_INET AF_INET6
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+ReadWritePaths=/run/fdpi
+
+[Install]
+WantedBy=multi-user.target

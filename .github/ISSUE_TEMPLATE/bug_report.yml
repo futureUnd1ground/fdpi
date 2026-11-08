@@ -1,0 +1,16 @@
+name: Ошибка
+description: Ошибка TUI, установки или сетевого доступа
+body:
+  - type: textarea
+    attributes:
+      label: Что произошло
+      description: Ожидаемый результат, фактический результат и шаги. Без секретов.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Версия FDPI и Linux
+  - type: textarea
+    attributes:
+      label: Условия сети
+      description: Стратегия, сервис, включён ли VPN, этап ошибки DNS/TCP/TLS/HTTP/медиа.

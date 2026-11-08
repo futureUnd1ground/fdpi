@@ -1,0 +1,39 @@
+mkdir -p build
+go build -trimpath -o build/fdpi ./cmd/fdpi
+goos: linux
+goarch: amd64
+pkg: github.com/fdpi/fdpi/internal/config
+cpu: 11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz
+BenchmarkParse-12          	   29199	     41285 ns/op	   15271 B/op	     106 allocs/op
+BenchmarkHostlist10k-12    	     150	   7882953 ns/op	 3361037 B/op	   30170 allocs/op
+PASS
+ok  	github.com/fdpi/fdpi/internal/config	2.393s
+PASS
+ok  	github.com/fdpi/fdpi/internal/diagnostics	0.003s
+PASS
+ok  	github.com/fdpi/fdpi/internal/engine	0.002s
+goos: linux
+goarch: amd64
+pkg: github.com/fdpi/fdpi/internal/network
+cpu: 11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz
+BenchmarkRules-12    	 3603436	       331.0 ns/op	     680 B/op	       4 allocs/op
+PASS
+ok  	github.com/fdpi/fdpi/internal/network	1.195s
+PASS
+ok  	github.com/fdpi/fdpi/internal/service	0.002s
+goos: linux
+goarch: amd64
+pkg: github.com/fdpi/fdpi/internal/tui
+cpu: 11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz
+BenchmarkInitialView-12    	   22686	     52490 ns/op	   36462 B/op	     322 allocs/op
+PASS
+ok  	github.com/fdpi/fdpi/internal/tui	1.195s
+goos: linux
+goarch: amd64
+pkg: github.com/fdpi/fdpi/cmd/fdpi
+cpu: 11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz
+BenchmarkCLIStartup-12       	     644	   1865535 ns/op	     17772 maxRSS-KiB	   48474 B/op	      58 allocs/op
+BenchmarkTUIStartupPTY-12    	      39	  30420869 ns/op	  19316385 first-frame-ns	     24200 maxRSS-KiB	   18590 B/op	      44 allocs/op
+PASS
+ok  	github.com/fdpi/fdpi/cmd/fdpi	3.008s
+TUI initial render is BenchmarkInitialView; terminal startup additionally depends on emulator/PTY.

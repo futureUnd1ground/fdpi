@@ -1,0 +1,218 @@
+{
+  "version": 1,
+  "strategies": [
+    {
+      "protocols": [
+        "http",
+        "tls"
+      ],
+      "conditions": "Новые локальные TCP-соединения на портах 80/443 с распознаваемым HTTP Host или TLS SNI",
+      "id": "light",
+      "name": "Лёгкая",
+      "description": "Разделение TCP после первого байта",
+      "tcp": "multisplit",
+      "split": "1",
+      "fooling": "",
+      "ttl": 0,
+      "repeats": 1,
+      "quic": false,
+      "host_case": false,
+      "risks": "Дополнительные TCP-сегменты; совместимость зависит от сетевого оборудования"
+    },
+    {
+      "protocols": [
+        "http",
+        "tls"
+      ],
+      "conditions": "Новые локальные TCP-соединения на портах 80/443 с распознаваемым HTTP Host или TLS SNI",
+      "id": "balanced",
+      "name": "Сбалансированная",
+      "description": "Ложный пакет и разделение по домену SNI/HTTP Host",
+      "tcp": "fake,multisplit",
+      "split": "method+2,midsld",
+      "fooling": "badseq",
+      "ttl": 0,
+      "repeats": 1,
+      "quic": false,
+      "host_case": false,
+      "risks": "Некоторые сетевые устройства отвергают изменение номеров последовательности TCP"
+    },
+    {
+      "protocols": [
+        "http",
+        "tls",
+        "quic"
+      ],
+      "conditions": "Новые локальные TCP-соединения на портах 80/443 с распознаваемым HTTP Host или TLS SNI",
+      "id": "aggressive",
+      "name": "Агрессивная",
+      "description": "Ложные пакеты, обратный порядок TCP-сегментов и обработка QUIC",
+      "tcp": "fake,multidisorder",
+      "split": "1,midsld",
+      "fooling": "badseq,md5sig",
+      "ttl": 0,
+      "repeats": 6,
+      "quic": true,
+      "host_case": false,
+      "risks": "Дополнительные пакеты; серверы по-разному обрабатывают опцию MD5"
+    },
+    {
+      "protocols": [
+        "http",
+        "tls"
+      ],
+      "conditions": "Новые локальные TCP-соединения на портах 80/443 с распознаваемым HTTP Host или TLS SNI",
+      "id": "tcp-split",
+      "name": "Разделение TCP",
+      "description": "Разделение исходных данных на несколько TCP-сегментов",
+      "tcp": "multisplit",
+      "split": "1,5",
+      "fooling": "",
+      "ttl": 0,
+      "repeats": 1,
+      "quic": false,
+      "host_case": false,
+      "risks": "Дополнительные TCP-сегменты; совместимость зависит от сетевого оборудования"
+    },
+    {
+      "protocols": [
+        "http",
+        "tls"
+      ],
+      "conditions": "Новые локальные TCP-соединения на портах 80/443 с распознаваемым HTTP Host или TLS SNI",
+      "id": "tls-focus",
+      "name": "Обработка TLS",
+      "description": "Разделение TLS ClientHello в середине домена SNI",
+      "tcp": "multisplit",
+      "split": "midsld",
+      "fooling": "",
+      "ttl": 0,
+      "repeats": 1,
+      "quic": false,
+      "host_case": false,
+      "risks": "Дополнительные TCP-сегменты; совместимость зависит от сетевого оборудования"
+    },
+    {
+      "protocols": [
+        "quic"
+      ],
+      "conditions": "Распознаваемый QUIC Initial на UDP/443 с подходящим доменом",
+      "id": "quic-focus",
+      "name": "Обработка QUIC",
+      "description": "Ложный QUIC Initial; обработка только UDP/443",
+      "tcp": "",
+      "split": "",
+      "fooling": "",
+      "ttl": 0,
+      "repeats": 3,
+      "quic": true,
+      "host_case": false,
+      "risks": "Только UDP/443; голос и медиапотоки не туннелируются"
+    },
+    {
+      "protocols": [
+        "http",
+        "tls"
+      ],
+      "conditions": "Новые TCP-соединения на 80/443 с HTTP Host или TLS SNI; TTL нужно подобрать под маршрут до DPI и сервера",
+      "id": "ttl-fake",
+      "name": "Подмена с TTL",
+      "description": "Ложный пакет с заданным TTL, затем разделение TCP",
+      "tcp": "fake,multisplit",
+      "split": "1",
+      "fooling": "",
+      "ttl": 3,
+      "repeats": 1,
+      "quic": false,
+      "host_case": false,
+      "risks": "TTL должен позволить пакету дойти до DPI, но не до сервера; зависит от маршрута"
+    },
+    {
+      "protocols": [
+        "http",
+        "tls"
+      ],
+      "conditions": "Новые локальные TCP-соединения на портах 80/443 с распознаваемым HTTP Host или TLS SNI",
+      "id": "spotify-desktop",
+      "name": "Spotify Desktop",
+      "description": "Ложный TLS-пакет и разделение для Spotify Desktop",
+      "tcp": "fake,multisplit",
+      "split": "1,midsld",
+      "fooling": "badseq",
+      "ttl": 0,
+      "repeats": 2,
+      "quic": false,
+      "host_case": false,
+      "risks": "Только HTTP/TLS на 80/443. Нативный AP-трафик, регион и ограничения аккаунта не обходятся"
+    },
+    {
+      "protocols": [
+        "http"
+      ],
+      "conditions": "Открытый HTTP на TCP/80; зашифрованные заголовки HTTPS изменить нельзя",
+      "id": "http-host",
+      "name": "Заголовок Host",
+      "description": "Изменение регистра букв заголовка HTTP Host",
+      "tcp": "",
+      "split": "",
+      "fooling": "",
+      "ttl": 0,
+      "repeats": 1,
+      "quic": false,
+      "host_case": true,
+      "risks": "Только HTTP; зашифрованный HTTPS не изменяется"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "youtube",
+      "enabled": false,
+      "strategy": "balanced",
+      "domains": [
+        "youtube.com",
+        "youtu.be",
+        "googlevideo.com",
+        "ytimg.com",
+        "youtubei.googleapis.com"
+      ]
+    },
+    {
+      "id": "steam",
+      "enabled": false,
+      "strategy": "balanced",
+      "domains": [
+        "steampowered.com",
+        "steamcommunity.com",
+        "steamstatic.com"
+      ]
+    },
+    {
+      "id": "discord",
+      "enabled": false,
+      "strategy": "balanced",
+      "domains": [
+        "discord.com",
+        "discord.gg",
+        "discordapp.com",
+        "discordapp.net",
+        "discord.media"
+      ]
+    },
+    {
+      "id": "spotify",
+      "name": "Spotify Desktop",
+      "enabled": false,
+      "strategy": "spotify-desktop",
+      "domains": [
+        "spotify.com",
+        "scdn.co",
+        "spotifycdn.com",
+        "spotifycdn.net",
+        "audio-ak-spotify-com.akamaized.net",
+        "audio4-ak-spotify-com.akamaized.net",
+        "audio-akp-spotify-com.akamaized.net",
+        "audio4-akp-spotify-com.akamaized.net"
+      ]
+    }
+  ]
+}

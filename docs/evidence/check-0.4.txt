@@ -1,0 +1,20 @@
+test -z "$(gofmt -l cmd internal)"
+go vet ./...
+go test ./...
+ok  	github.com/futureUnd1ground/fdpi/cmd/fdpi	0.133s
+ok  	github.com/futureUnd1ground/fdpi/internal/config	0.028s
+ok  	github.com/futureUnd1ground/fdpi/internal/diagnostics	0.028s
+ok  	github.com/futureUnd1ground/fdpi/internal/engine	0.025s
+ok  	github.com/futureUnd1ground/fdpi/internal/network	0.004s
+ok  	github.com/futureUnd1ground/fdpi/internal/service	0.007s
+ok  	github.com/futureUnd1ground/fdpi/internal/tui	0.043s
+go test -race ./...
+ok  	github.com/futureUnd1ground/fdpi/cmd/fdpi	1.201s
+ok  	github.com/futureUnd1ground/fdpi/internal/config	1.457s
+ok  	github.com/futureUnd1ground/fdpi/internal/diagnostics	1.181s
+ok  	github.com/futureUnd1ground/fdpi/internal/engine	1.064s
+ok  	github.com/futureUnd1ground/fdpi/internal/network	1.023s
+ok  	github.com/futureUnd1ground/fdpi/internal/service	1.048s
+ok  	github.com/futureUnd1ground/fdpi/internal/tui	1.312s
+mkdir -p build
+go build -trimpath -o build/fdpi ./cmd/fdpi

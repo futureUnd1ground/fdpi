@@ -1,0 +1,2 @@
+docs/evidence/*.txt -whitespace
+*.png binary

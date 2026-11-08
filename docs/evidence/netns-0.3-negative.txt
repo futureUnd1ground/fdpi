@@ -1,0 +1,76 @@
+=== RUN   TestRulesScope
+--- PASS: TestRulesScope (0.00s)
+=== RUN   TestNetnsApplyCleanup
+--- PASS: TestNetnsApplyCleanup (0.09s)
+PASS
+ok  	github.com/fdpi/fdpi/internal/network	0.092s
+=== RUN   TestAccountingCreateAndPreserve
+--- PASS: TestAccountingCreateAndPreserve (0.00s)
+=== RUN   TestAccountingRejectsSymlink
+--- PASS: TestAccountingRejectsSymlink (0.00s)
+=== RUN   TestControlRequiresExplicitReplacement
+--- PASS: TestControlRequiresExplicitReplacement (0.00s)
+=== RUN   TestControlRestoresForeignServicesOnFailedStart
+--- PASS: TestControlRestoresForeignServicesOnFailedStart (0.00s)
+=== RUN   TestEnableReplacementDoesNotStopRunningForeignServices
+--- PASS: TestEnableReplacementDoesNotStopRunningForeignServices (0.00s)
+=== RUN   TestNetnsPeer
+    payload_test.go:29: peer helper
+--- SKIP: TestNetnsPeer (0.00s)
+=== RUN   TestNetnsPayload
+Обработка FDPI включена: NFQUEUE 24000, без слушателя трафик идёт напрямую
+    payload_test.go:248: light http://10.203.0.2/: Get "http://10.203.0.2/": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+--- FAIL: TestNetnsPayload (5.16s)
+=== RUN   TestExclusiveLock
+--- PASS: TestExclusiveLock (0.00s)
+TERM received !
+=== RUN   TestNetnsSupervision
+self-built version Nov  8 2026 13:20:21 lua_compat_ver 6
+
+we have 2 user defined desync profile(s) and default low priority profile 0
+we have 0 user defined desync template(s)
+Loading hostlist /tmp/TestNetnsPayload3704713876/001/youtube.txt
+loading plain text list
+Loaded 2 hosts from /tmp/TestNetnsPayload3704713876/001/youtube.txt
+Running as UID=0 GID=0
+initializing raw sockets bind-fix4=0 bind-fix6=0
+LUA v5.5
+opening nfq library handle
+unbinding existing nf_queue handler for AF_INET (if any)
+binding nfnetlink_queue as nf_queue handler for AF_INET
+unbinding existing nf_queue handler for AF_INET6 (if any)
+binding nfnetlink_queue as nf_queue handler for AF_INET6
+binding this socket to queue '24000'
+setting copy_packet mode
+quit requested
+unbinding from queue 24000
+closing nfq library handle
+Обработка FDPI включена: NFQUEUE 24000, без слушателя трафик идёт напрямую
+TERM received !
+self-built version Nov  8 2026 13:20:21 lua_compat_ver 6
+
+we have 2 user defined desync profile(s) and default low priority profile 0
+we have 0 user defined desync template(s)
+Loading hostlist /tmp/TestNetnsSupervision514290060/001/youtube.txt
+loading plain text list
+Loaded 5 hosts from /tmp/TestNetnsSupervision514290060/001/youtube.txt
+Running as UID=0 GID=0
+initializing raw sockets bind-fix4=0 bind-fix6=0
+LUA v5.5
+opening nfq library handle
+unbinding existing nf_queue handler for AF_INET (if any)
+binding nfnetlink_queue as nf_queue handler for AF_INET
+unbinding existing nf_queue handler for AF_INET6 (if any)
+binding nfnetlink_queue as nf_queue handler for AF_INET6
+binding this socket to queue '24000'
+setting copy_packet mode
+quit requested
+unbinding from queue 24000
+closing nfq library handle
+Обработка FDPI включена: NFQUEUE 24000, без слушателя трафик идёт напрямую
+--- PASS: TestNetnsSupervision (0.15s)
+=== RUN   TestFailedApplyRestoresConfig
+--- PASS: TestFailedApplyRestoresConfig (0.00s)
+FAIL
+FAIL	github.com/fdpi/fdpi/internal/service	5.317s
+FAIL
