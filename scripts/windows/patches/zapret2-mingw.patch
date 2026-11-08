@@ -1,0 +1,207 @@
+diff --git a/nfq2/helpers.c b/nfq2/helpers.c
+index 3c27805..684a5c6 100644
+--- a/nfq2/helpers.c
++++ b/nfq2/helpers.c
+@@ -13,7 +13,7 @@
+ #include <errno.h>
+ #include <sys/param.h>
+ 
+-#ifdef __CYGWIN__
++#ifdef ZAPRET_WIN
+ #include <sys/cygwin.h>
+ #endif
+ 
+@@ -435,7 +435,12 @@ bool file_mod_signature(const char *filename, file_mod_sig *ms)
+ 		FILE_MOD_RESET(ms);
+ 		return false;
+ 	}
++#ifdef ZAPRET_WIN
++	ms->mod_time.tv_sec = st.st_mtime;
++	ms->mod_time.tv_nsec = 0;
++#else
+ 	ms->mod_time = st.st_mtim;
++#endif
+ 	ms->size = st.st_size;
+ 	return true;
+ }
+@@ -563,7 +568,7 @@ bool fill_crypto_random_bytes(uint8_t *p, size_t sz)
+ 	ssize_t rd;
+ 	int fd;
+ 
+-#if defined(__linux__) || defined(__CYGWIN__)
++#if defined(__linux__) || defined(ZAPRET_WIN)
+ 	for (; sz && (rd = getrandom(p, sz, GRND_NONBLOCK)) > 0; p += rd, sz -= rd);
+ 	if (sz)
+ #elif defined(BSD)
+@@ -678,7 +683,7 @@ bool realpath_any(const char *file, char *pabs)
+ 	int res;
+ 	size_t l;
+ 
+-#ifdef __CYGWIN__
++#ifdef ZAPRET_WIN
+ 	l = cygwin_conv_path(CCP_WIN_A_TO_POSIX | CCP_ABSOLUTE, file, NULL, 0);
+ 	char *rp_file = (char*)malloc(l);
+ 	if (cygwin_conv_path(CCP_WIN_A_TO_POSIX | CCP_ABSOLUTE, file, rp_file, l))
+@@ -704,7 +709,7 @@ bool realpath_any(const char *file, char *pabs)
+ 		b = res>0 && res<PATH_MAX;
+ 	}
+ ex:
+-#ifdef __CYGWIN__
++#ifdef ZAPRET_WIN
+ 	free(rp_file);
+ #else
+ #undef rp_file
+@@ -744,7 +749,7 @@ uint64_t boottime_ms(void)
+ }
+ 
+ 
+-#ifdef __CYGWIN__
++#ifdef ZAPRET_WIN
+ uint32_t mask_from_bitcount(uint32_t zct)
+ {
+ 	return zct < 32 ? ~((1u << zct) - 1) : 0;
+diff --git a/nfq2/lua.c b/nfq2/lua.c
+index 6a5111f..0113bf6 100644
+--- a/nfq2/lua.c
++++ b/nfq2/lua.c
+@@ -21,19 +21,11 @@
+ 
+ #include <sys/syscall.h>
+ 
+-#elif defined(__CYGWIN__)
++#elif defined(ZAPRET_WIN)
+ 
++#include <winsock2.h>
++#include <ws2tcpip.h>
+ #include <processthreadsapi.h>
+-
+-// header hell conflicts between unix and win32
+-typedef struct in6_addr IN6_ADDR, *PIN6_ADDR, *LPIN6_ADDR;
+-typedef struct sockaddr	*LPSOCKADDR;
+-typedef struct _SOCKET_ADDRESS {
+-  LPSOCKADDR lpSockaddr;
+-  int iSockaddrLength;
+-} SOCKET_ADDRESS,*PSOCKET_ADDRESS,*LPSOCKET_ADDRESS;
+-#define _WINSOCK2API_
+-#define _NETIOAPI_H_
+ #include <iphlpapi.h>
+ 
+ #endif
+@@ -794,7 +786,7 @@ static int luacall_gettid(lua_State *L)
+ 		lua_pushinteger(L, tid);
+ #elif defined(__linux__)
+ 	lua_pushinteger(L, syscall(SYS_gettid));
+-#elif defined(__CYGWIN__)
++#elif defined(ZAPRET_WIN)
+ 	lua_pushinteger(L, GetCurrentThreadId());
+ #else
+ 	// unsupported OS ?
+@@ -3131,7 +3123,7 @@ static int luacall_get_source_ip(lua_State *L)
+ 	LUA_STACK_GUARD_RETURN(L,1)
+ }
+ 
+-#ifdef __CYGWIN__
++#ifdef ZAPRET_WIN
+ #define GAA_FLAGS (GAA_FLAG_SKIP_DNS_SERVER | GAA_FLAG_SKIP_MULTICAST | GAA_FLAG_SKIP_ANYCAST)
+ static int lua_get_ifaddrs(lua_State *L)
+ {
+@@ -3223,7 +3215,7 @@ static int lua_get_ifaddrs(lua_State *L)
+ 	lua_Integer li;
+ 	struct ifreq ifr;
+ 	const char *ifname;
+-#ifdef __CYGWIN__
++#ifdef ZAPRET_WIN
+ 	char ifname_buf[IFNAMSIZ];
+ #endif
+ 	memset(&ifr,0,sizeof(ifr));
+@@ -3239,7 +3231,7 @@ static int lua_get_ifaddrs(lua_State *L)
+ 		{
+ 			if (a->ifa_addr && (a->ifa_addr->sa_family==AF_INET || a->ifa_addr->sa_family==AF_INET6) && a->ifa_name && *a->ifa_name)
+ 			{
+-#ifdef __CYGWIN__
++#ifdef ZAPRET_WIN
+ 				// cygwin returns GUID interface names. windivert needs ifindex.subindex
+ 				if (index = if_nametoindex(a->ifa_name))
+ 				{
+@@ -3255,7 +3247,7 @@ static int lua_get_ifaddrs(lua_State *L)
+ 					lua_pop(L,1);
+ 					lua_pushf_table(L,ifname);
+ 					lua_getfield(L,-1,ifname);
+-#ifdef __CYGWIN__
++#ifdef ZAPRET_WIN
+ 					lua_pushf_str(L, "guid", a->ifa_name);
+ #else
+ 					index = if_nametoindex(ifname);
+@@ -3750,7 +3742,11 @@ static int luacall_stat(lua_State *L)
+ 		lua_pushf_lint(L,"dev", st.st_dev);
+ 		lua_pushf_lint(L,"inode", st.st_ino);
+ 		lua_pushf_lint(L,"size", st.st_size);
+-		lua_pushf_number(L,"mtime", st.st_mtim.tv_sec + st.st_mtim.tv_nsec/1000000000.);
++		#ifdef ZAPRET_WIN
++			lua_pushf_number(L,"mtime", st.st_mtime);
++#else
++			lua_pushf_number(L,"mtime", st.st_mtim.tv_sec + st.st_mtim.tv_nsec/1000000000.);
++#endif
+ 
+ 		const char *ftype;
+ 		switch(st.st_mode & S_IFMT)
+@@ -3791,7 +3787,11 @@ static void lua_xtime(lua_State *L, struct tm *(*timefunc)(const time_t *,struct
+ 		lua_pushf_int(L,"wday", t.tm_wday);
+ 		lua_pushf_int(L,"yday", t.tm_yday);
+ 		lua_pushf_int(L,"isdst", t.tm_isdst);
+-		lua_pushf_str(L,"zone", t.tm_zone);
++		#ifdef ZAPRET_WIN
++			lua_pushf_str(L,"zone", _tzname[0]);
++#else
++			lua_pushf_str(L,"zone", t.tm_zone);
++#endif
+ 
+ 		char s[40];
+ 		snprintf(s,sizeof(s),"%02d.%02d.%04d %02d:%02d:%02d", t.tm_mday, t.tm_mon + 1, t.tm_year + 1900, t.tm_hour, t.tm_min, t.tm_sec);
+@@ -4142,11 +4142,11 @@ bool lua_test_init_script_files(void)
+ 	{
+ 		if (str->str[0]=='@' && !lua_file_open_test(str->str+1, NULL, NULL))
+ 		{
+-#ifndef __CYGWIN__
++#ifndef ZAPRET_WIN
+ 			int e = errno;
+ #endif
+ 			DLOG_ERR("LUA file '%s' or '%s.gz' not accessible\n", str->str+1, str->str+1);
+-#ifndef __CYGWIN__
++#ifndef ZAPRET_WIN
+ 			if (e==EACCES)
+ 				DLOG_ERR("I drop my privileges and do not run Lua as root\ncheck file permissions and +x rights on all directories in the path\n");
+ #endif
+diff --git a/nfq2/sec.c b/nfq2/sec.c
+index 3c675c5..e72a74a 100644
+--- a/nfq2/sec.c
++++ b/nfq2/sec.c
+@@ -236,7 +236,7 @@ bool dropcaps(void)
+ 
+ #endif // __linux__
+ 
+-#ifndef __CYGWIN__
++#ifndef ZAPRET_WIN
+ 
+ #ifndef __linux__
+ bool sec_harden(void)
+@@ -332,6 +332,9 @@ void print_id(void)
+ 
+ void daemonize(void)
+ {
++#ifdef ZAPRET_WIN
++	return; // backgrounding is handled by the Windows service wrapper
++#else
+ 	int pid;
+ 	char cwd[PATH_MAX];
+ 
+@@ -395,8 +398,8 @@ void daemonize(void)
+ 		DLOG_PERROR("dup(stderr)");
+ 		exit(25);
+ 	}
++#endif
+ }
+-
+ bool writepid(const char *filename)
+ {
+ 	FILE *F;
