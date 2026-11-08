@@ -203,7 +203,7 @@ func (w *setupWizard) yes(ctx context.Context, prompt string) (bool, error) {
 	}
 }
 
-var setupDependencies = []string{"base-devel", "go", "git", "pkgconf", "nftables", "libnetfilter_queue", "libnfnetlink", "libmnl", "zlib", "lua", "sudo"}
+var setupDependencies = []string{"base-devel", "go", "git", "pkgconf", "nftables", "libnetfilter_queue", "libnfnetlink", "libmnl", "libcap", "zlib", "lua", "sudo"}
 
 // missingSetupPackages asks pacman to resolve dependency providers, rather than
 // forcing package names that could replace CachyOS compatibility packages.
@@ -242,7 +242,7 @@ func depsReady(ctx context.Context) bool {
 			return false
 		}
 	}
-	return exec.CommandContext(ctx, "pkg-config", "--exists", "libnetfilter_queue", "libnfnetlink", "libmnl", "zlib", "lua").Run() == nil
+	return exec.CommandContext(ctx, "pkg-config", "--exists", "libnetfilter_queue", "libnfnetlink", "libmnl", "libcap", "zlib", "lua").Run() == nil
 }
 func runtimeAccounting() bool {
 	b, e := os.ReadFile("/proc/sys/net/netfilter/nf_conntrack_acct")

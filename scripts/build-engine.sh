@@ -4,8 +4,8 @@ cd -- "$(dirname -- "$0")/.."
 commit=9b9b929f837978173d787a5773a47a91d90f7f81
 command -v git >/dev/null
 command -v cc >/dev/null
-pkg-config --exists libnetfilter_queue libnfnetlink libmnl || {
-    echo 'Установите зависимости сборки: sudo pacman -S --needed base-devel git pkgconf libnetfilter_queue libnfnetlink libmnl' >&2
+pkg-config --exists libnetfilter_queue libnfnetlink libmnl libcap || {
+    echo 'Установите зависимости сборки: sudo pacman -S --needed base-devel git pkgconf libnetfilter_queue libnfnetlink libmnl libcap' >&2
     exit 1
 }
 pkg-config --exists zlib || {

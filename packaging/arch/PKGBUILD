@@ -6,7 +6,7 @@ pkgdesc='Domain-oriented nfqws2 manager with Go terminal UI'
 arch=('x86_64' 'aarch64')
 url='https://github.com/futureUnd1ground/fdpi'
 license=('MIT')
-depends=('nftables' 'systemd' 'libnetfilter_queue' 'libnfnetlink' 'libmnl' 'zlib' 'lua' 'sudo')
+depends=('nftables' 'systemd' 'libnetfilter_queue' 'libnfnetlink' 'libmnl' 'libcap' 'zlib' 'lua' 'sudo')
 makedepends=('go>=1.24' 'git')
 backup=('etc/fdpi/config.json')
 source=("fdpi-$pkgver.tar.gz" 'zapret2::git+https://github.com/bol-van/zapret2.git#commit=9b9b929f837978173d787a5773a47a91d90f7f81')

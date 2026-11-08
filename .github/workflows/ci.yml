@@ -12,7 +12,7 @@ jobs:
           go-version-file: go.mod
           cache: true
       - name: Install engine build dependencies
-        run: sudo apt-get update && sudo apt-get install -y build-essential pkg-config libnetfilter-queue-dev libnfnetlink-dev libmnl-dev zlib1g-dev liblua5.4-dev
+        run: sudo apt-get update && sudo apt-get install -y build-essential pkg-config libnetfilter-queue-dev libnfnetlink-dev libmnl-dev zlib1g-dev liblua5.4-dev libcap-dev
       - name: Build pinned external nfqws2
         run: make engine
       - name: Vet, tests, race detector and actual engine dry-run
